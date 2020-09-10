@@ -3,7 +3,7 @@ import { FiChevronRight } from 'react-icons/fi';
 
 import logoImg from '../../assets/logo.svg';
 
-import { Title, Form, Repositories } from './styles';
+import { Title, Form, Repositories, Error } from './styles';
 
 import api from '../../services/api';
 
@@ -25,7 +25,8 @@ const Dashboard: React.FC = () => {
 	async function handleAddRepo(event: FormEvent<HTMLFormElement>): Promise<void> {
 		event.preventDefault();
 		if (!newRepo) {
-			setInputError('Digite o utor/nome do repositório');
+			setInputError('Digite o autor/nome do repositório');
+			return;
 		}
 		
 		try {
@@ -35,6 +36,7 @@ const Dashboard: React.FC = () => {
 	
 			setRepositories([...repositories, repository]);
 			setNewRepo('');
+			setInputError('');
 		} catch (err) {
 			setInputError('Erro ao buscar repositório');
 		}
@@ -45,13 +47,16 @@ const Dashboard: React.FC = () => {
 			<img src={logoImg} alt="Github Explorer" />
 			<Title>Explore repositórios no Github</Title>
 
-			<Form onSubmit={handleAddRepo}>
+			<Form hasError={!!inputError} onSubmit={handleAddRepo}>
 				<input 
 				value={newRepo}
 				onChange={e => setNewRepo(e.target.value)}
 				placeholder="Digite o nome do repositório"/>
 				<button type="submit">Pesquisar</button>
 			</Form>
+
+			{/* só exibe se inputError for true */}
+			{ inputError && <Error>{inputError}</Error> }
 
 			<Repositories>
 			{repositories.map(repository => (
